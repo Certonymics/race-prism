@@ -4,27 +4,25 @@ Implements the Boneh-Franklin Identity-Based Encryption scheme as described in [
 
 ## Dependencies
 
-* [Pairing-Based Cryptography Library](https://crypto.stanford.edu/pbc/)
-* [GMP](https://gmplib.org/)
-* [OpenSSL](https://www.openssl.org/)
-* [Cmake](https://cmake.org/) 3.12 or greater
+- [Pairing-Based Cryptography Library](https://crypto.stanford.edu/pbc/)
+- [GMP](https://gmplib.org/)
+- [OpenSSL](https://www.openssl.org/)
+- [Cmake](https://cmake.org/) 3.12 or greater
 
 On a Mac, all dependencies can be installed via Homebrew, with the command
 
     brew install cmake pbc openssl
     brew install --cask corretto
-    
-You will need to use the Homebrew version of OpenSSL rather than the system OpenSSL on recent macOS releases, 
-because Apple does not allow linking to the system install of OpenSSL. `corretto` is Amazon's release of OpenJDK, 
+
+You will need to use the Homebrew version of OpenSSL rather than the system OpenSSL on recent macOS releases,
+because Apple does not allow linking to the system install of OpenSSL. `corretto` is Amazon's release of OpenJDK,
 but you can use a different release if you prefer.
 
 ## Building
 
-    mkdir build
+    /opt/homebrew/bin/cmake -B build
     cd build
-    cmake ..
     make
-    make install
 
 If you installed OpenSSL via Homebrew, you'll need to use
 
@@ -37,8 +35,24 @@ or (using the hints that `brew reinstall openssl@3` gives), e.g.:
     export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     cmake ..
 
-instead. If you have to fix any compilation errors, you may need to delete and remake the `build` directory to clear 
+instead. If you have to fix any compilation errors, you may need to delete and remake the `build` directory to clear
 out CMake's cache.
+
+## Building for iOS
+
+    # Clone the `openssl-cmake` submodule
+    git submodule update --init
+    /opt/homebrew/bin/cmake -B build-ios -DIOS=ON
+    cd build-ios
+    make
+
+## Building for Android
+
+    # Clone the `openssl-cmake` submodule
+    git submodule update --init
+    /opt/homebrew/bin/cmake -B build-android -DANDROID=ON
+    cd build-android
+    make
 
 ## Setting up an IBE System
 
