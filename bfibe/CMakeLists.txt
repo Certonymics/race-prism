@@ -41,7 +41,22 @@ endif(ANDROID)
 
 find_package(GMP REQUIRED)
 find_package(PBC REQUIRED)
-find_package(OpenSSL REQUIRED)
+
+if(IOS OR ANDROID)
+  # Build OpenSSL from source for cross compilation
+  include(FetchContent)
+  FetchContent_Declare(
+    openssl-cmake
+    GIT_REPOSITORY https://github.com/viaduck/openssl-cmake.git
+    GIT_TAG v3.6
+  )
+  set(BUILD_OPENSSL ON)
+  set(OPENSSL_BUILD_VERSION "3.6.0")
+  FetchContent_MakeAvailable(openssl-cmake)
+
+else()
+  find_package(OpenSSL REQUIRED)
+endif()
 
 add_library(bfibe STATIC
   src/bfibe.c src/hash.c src/base64.c
@@ -52,11 +67,6 @@ add_library(bfibe STATIC
 target_include_directories(bfibe PUBLIC include)
 
 if(IOS OR ANDROID)
-  # Build OpenSSL from source for cross compilation
-  set(BUILD_OPENSSL ON)
-  set(OPENSSL_BUILD_VERSION "3.6.0")
-  add_subdirectory(external/openssl-cmake)
-
   add_dependencies(bfibe gmp_external)
   add_dependencies(bfibe pbc_external)
   target_link_libraries(bfibe PUBLIC gmp)

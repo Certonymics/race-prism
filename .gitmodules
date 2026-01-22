@@ -1,3 +1,0 @@
-[submodule "bfibe/external/openssl-cmake"]
-	path = bfibe/external/openssl-cmake
-	url = git@github.com:viaduck/openssl-cmake.git
