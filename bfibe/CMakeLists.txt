@@ -90,9 +90,6 @@ else()
   add_executable(genprivatekey app/genprivatekey.c)
   target_link_libraries(genprivatekey PUBLIC bfibe)
 
-  add_executable(test app/test.c)
-  target_link_libraries(test PUBLIC bfibe)
-
   add_executable(benchmark app/benchmark.c)
   target_link_libraries(benchmark PUBLIC bfibe)
   target_link_libraries(benchmark PUBLIC ${OPENSSL_CRYPTO_LIBRARY})
