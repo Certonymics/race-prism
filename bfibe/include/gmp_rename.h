@@ -1,0 +1,1 @@
+#define __gmpz_set_ui bfibe___gmpz_set_ui

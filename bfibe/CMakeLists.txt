@@ -72,6 +72,9 @@ if(IOS OR ANDROID)
   target_link_libraries(bfibe PUBLIC gmp)
   target_link_libraries(bfibe PUBLIC pbc)
   target_link_libraries(bfibe PRIVATE ssl crypto)
+  target_compile_options(bfibe PRIVATE
+    -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h
+  )
 else()
   find_library(OPENSSL_CRYPTO_LIBRARY ssl)
   find_path(OPENSSL_INCLUDE_DIR openssl)

@@ -27,7 +27,7 @@ if(IOS)
             --prefix=${CMAKE_BINARY_DIR}/external/gmp
             --host=aarch64-apple-darwin
             CC=${CMAKE_C_COMPILER}
-            "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0"
+            "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
         BUILD_COMMAND make
         BUILD_IN_SOURCE 1
     )
