@@ -3,6 +3,7 @@
 
 // mpz functions
 // clang-format off
+#define __gmp_allocate_func                 bfibe___gmp_allocate_func
 #define __gmp_asprintf                      bfibe___gmp_asprintf
 #define __gmp_asprintf_final                bfibe___gmp_asprintf_final
 #define __gmp_asprintf_memory               bfibe___gmp_asprintf_memory
@@ -20,6 +21,7 @@
 #define __gmp_exception                     bfibe___gmp_exception
 #define __gmp_extract_double                bfibe___gmp_extract_double
 #define __gmp_fprintf                       bfibe___gmp_fprintf
+#define __gmp_free_func                     bfibe___gmp_free_func
 #define __gmp_fscanf                        bfibe___gmp_fscanf
 #define __gmp_get_memory_functions          bfibe___gmp_get_memory_functions
 #define __gmp_init_primesieve               bfibe___gmp_init_primesieve
@@ -42,6 +44,7 @@
 #define __gmp_randiset_mt                   bfibe___gmp_randiset_mt
 #define __gmp_randseed                      bfibe___gmp_randseed
 #define __gmp_randseed_ui                   bfibe___gmp_randseed_ui
+#define __gmp_reallocate_func               bfibe___gmp_reallocate_func
 #define __gmp_scanf                         bfibe___gmp_scanf
 #define __gmp_set_memory_functions          bfibe___gmp_set_memory_functions
 #define __gmp_snprintf                      bfibe___gmp_snprintf

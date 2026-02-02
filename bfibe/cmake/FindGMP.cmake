@@ -26,10 +26,19 @@ if(IOS)
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/gmp
             --host=aarch64-apple-darwin
+            --disable-shared
+            --enable-static
             CC=${CMAKE_C_COMPILER}
             "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
         BUILD_COMMAND make
         BUILD_IN_SOURCE 1
+    )
+    ExternalProject_Add_Step(gmp_external rename_symbols
+        DEPENDEES build
+        DEPENDERS install
+        WORKING_DIRECTORY <BINARY_DIR>/.libs
+        COMMAND sh -c "nm libgmp.a | grep -e '\\s___gmp' | awk '{print $NF}' | sort | uniq | awk '{print $1, \"_bfibe\" $1}' > renames.txt"
+        COMMAND llvm-objcopy --redefine-syms=renames.txt libgmp.a libgmp.a
     )
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/external/gmp/include)
@@ -46,6 +55,8 @@ elseif(ANDROID)
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/gmp
             --host=aarch64-linux-android
+            --disable-shared
+            --enable-static
             CC=${CMAKE_C_COMPILER}
         BUILD_COMMAND make
         BUILD_IN_SOURCE 1
