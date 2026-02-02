@@ -502,7 +502,6 @@
 #define __gmpz_inp_raw                      bfibe___gmpz_inp_raw
 #define __gmpz_inp_str                      bfibe___gmpz_inp_str
 #define __gmpz_inp_str_nowhite              bfibe___gmpz_inp_str_nowhite
-#define mpz_inp_str_nowhite                 bfibe___gmpz_inp_str_nowhite
 #define __gmpz_invert                       bfibe___gmpz_invert
 #define __gmpz_ior                          bfibe___gmpz_ior
 #define __gmpz_jacobi                       bfibe___gmpz_jacobi
