@@ -5,6 +5,23 @@
 
 cmake_minimum_required(VERSION 3.10)
 
+if(ANDROID)
+  set(ANDROID_NDK $ENV{ANDROID_NDK})
+  if(NOT ANDROID_NDK)
+      message(FATAL_ERROR "Environment variable ANDROID_NDK must be set to build for Android.")
+  endif()
+  if(NOT ANDROID_ABI)
+      message(FATAL_ERROR "Environment variable ANDROID_ABI must be set to build for Android. For example, arm64-v8a")
+  endif()
+  if(NOT CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE ${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
+  endif()
+  if(NOT ANDROID_API)
+    set(ANDROID_API 23)
+    set(ANDROID_PLATFORM android-${ANDROID_API})
+  endif()
+endif()
+
 project(
   BFIBE VERSION 0.1
   DESCRIPTION "Boneh-Franklin Identity Based Encryption using the Weil pairing."

@@ -37,6 +37,7 @@ if(IOS)
         DEPENDEES build
         DEPENDERS install
         WORKING_DIRECTORY <BINARY_DIR>/.libs
+        # !!!Note the underscore prefix for input and output symbols!!!
         COMMAND sh -c "nm libgmp.a | grep -e '\\s___gmp' | awk '{print $NF}' | sort | uniq | awk '{print $1, \"_bfibe\" $1}' > renames.txt"
         COMMAND llvm-objcopy --redefine-syms=renames.txt libgmp.a libgmp.a
     )
@@ -49,6 +50,14 @@ if(IOS)
         INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/external/gmp/include
     )
 elseif(ANDROID)
+    set(GMP_ENV
+        CC=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang
+        CXX=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang
+        AR=${CMAKE_AR}
+        RANLIB=${CMAKE_RANLIB}
+        STRIP=${CMAKE_STRIP}
+        "CFLAGS=-include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
+    )
     ExternalProject_Add(gmp_external
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
         PREFIX ${CMAKE_BINARY_DIR}/external/gmp
@@ -57,9 +66,18 @@ elseif(ANDROID)
             --host=aarch64-linux-android
             --disable-shared
             --enable-static
-            CC=${CMAKE_C_COMPILER}
+            --with-pic
+            ${GMP_ENV}
         BUILD_COMMAND make
         BUILD_IN_SOURCE 1
+    )
+    ExternalProject_Add_Step(gmp_external rename_symbols
+        DEPENDEES build
+        DEPENDERS install
+        WORKING_DIRECTORY <BINARY_DIR>/.libs
+        # !!!Note NO underscore prefix for input and output symbols!!!
+        COMMAND sh -c "nm libgmp.a | grep -e '\\s__gmp' | awk '{print $NF}' | sort | uniq | awk '{print $1, \"bfibe_\" $1}' > renames.txt"
+        COMMAND llvm-objcopy --redefine-syms=renames.txt libgmp.a libgmp.a
     )
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/external/gmp/include)
@@ -84,7 +102,7 @@ else()
     #     BUILD_COMMAND make
     #     BUILD_IN_SOURCE 1
     # )
-endif(IOS)
+endif()
 set(GMP_ROOT ${CMAKE_BINARY_DIR}/external/gmp)
 
 # if (GMP_INCLUDE_DIRS AND GMP_LIBRARIES)

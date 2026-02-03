@@ -31,6 +31,8 @@ if(IOS)
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc
             --host=aarch64-apple-darwin
+            --disable-shared
+            --enable-static
             "CC=${CMAKE_C_COMPILER} -arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
             "CFLAGS=-I${GMP_ROOT}/include"
             "CPPFLAGS=-I${GMP_ROOT}/include"
@@ -57,9 +59,12 @@ elseif(ANDROID)
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc
             --host=aarch64-linux-android
-            "CC=${CMAKE_C_COMPILER} -arch arm64 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
+            --disable-shared
+            --enable-static
+            "CC=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
             "CFLAGS=-I${GMP_ROOT}/include"
             "CPPFLAGS=-I${GMP_ROOT}/include"
+            "LDFLAGS=-L${GMP_ROOT}/lib"
             LIBS=-lgmp
             ac_cv_lib_gmp___gmpz_init=yes
             LEXLIB=
