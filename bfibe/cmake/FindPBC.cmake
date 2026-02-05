@@ -61,6 +61,7 @@ elseif(ANDROID)
             --host=aarch64-linux-android
             --disable-shared
             --enable-static
+            --with-pic # PIC is required for Android
             "CC=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
             "CFLAGS=-I${GMP_ROOT}/include"
             "CPPFLAGS=-I${GMP_ROOT}/include"
