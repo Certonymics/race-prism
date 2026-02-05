@@ -59,13 +59,16 @@ elseif(ANDROID)
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc
             --host=aarch64-linux-android
-            --disable-shared
+            --disable-shared # Otherwise we get `ld64.lld: error: unknown argument '-soname'`
             --enable-static
             --with-pic # PIC is required for Android
-            "CC=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
-            "CFLAGS=-I${GMP_ROOT}/include"
-            "CPPFLAGS=-I${GMP_ROOT}/include"
-            "LDFLAGS=-L${GMP_ROOT}/lib"
+            "CC=${CMAKE_C_COMPILER}"
+            "AR=${CMAKE_AR}"
+            "RANLIB=${CMAKE_RANLIB}"
+            "STRIP=${CMAKE_STRIP}"
+            "CFLAGS=-I${GMP_ROOT}/include -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h --target=${CMAKE_C_COMPILER_TARGET} --sysroot=${CMAKE_SYSROOT}"
+            "CPPFLAGS=-I${GMP_ROOT}/include -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h --target=${CMAKE_C_COMPILER_TARGET} --sysroot=${CMAKE_SYSROOT}" # Required for .y files (e.g. pbc/parser.y)
+            "LDFLAGS=-L${GMP_ROOT}/lib --target=${CMAKE_C_COMPILER_TARGET} --sysroot=${CMAKE_SYSROOT}"
             LIBS=-lgmp
             ac_cv_lib_gmp___gmpz_init=yes
             LEXLIB=

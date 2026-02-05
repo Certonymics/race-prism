@@ -51,12 +51,11 @@ if(IOS)
     )
 elseif(ANDROID)
     set(GMP_ENV
-        CC=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang
-        CXX=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_API}-clang
+        CC=${CMAKE_C_COMPILER}
         AR=${CMAKE_AR}
         RANLIB=${CMAKE_RANLIB}
         STRIP=${CMAKE_STRIP}
-        "CFLAGS=-include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
+        "CFLAGS=-include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h --target=${CMAKE_C_COMPILER_TARGET}"
     )
     ExternalProject_Add(gmp_external
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
