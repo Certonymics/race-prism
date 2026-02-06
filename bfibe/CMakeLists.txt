@@ -17,7 +17,7 @@ if(ANDROID)
     set(CMAKE_TOOLCHAIN_FILE ${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
   endif()
   if(NOT ANDROID_API)
-    set(ANDROID_API 23)
+    set(ANDROID_API 24)
     set(ANDROID_PLATFORM android-${ANDROID_API})
   endif()
 endif()
@@ -33,25 +33,20 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 # aren't available on Android. "gmp" could be replaced with anything
 # that doesn't blow the world up when passed to the compiler as a -l option.
 if(ANDROID)
-  set(CROSS_ANDROID ON)
-elseif(IOS)
-  set(CROSS ON)
-  set(CROSS_TARGET "ios64-xcrun")
-endif()
-
-if(ANDROID)
   #set(JAVA_JVM_LIBRARY gmp)
   set(JAVA_INCLUDE_PATH2 NotNeeded)
-else()
- if ("${TARGET_ARCHITECTURE}" STREQUAL "LINUX_arm64-v8a")
-        list(APPEND LD_LIBRARY_PATH "/opt/homebrew/lib")
-        include_directories("/opt/homebrew/include")
-    else()
-        message("appending /opt/homebrew/include")
-        list(APPEND LD_LIBRARY_PATH "/opt/homebrew/lib")
-        include_directories("/opt/homebrew/include")
-    endif()
-endif(ANDROID)
+elseif(NOT IOS AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+  # Not cross compiling on mac
+  execute_process(
+    COMMAND brew --prefix
+    OUTPUT_VARIABLE HOMEBREW_PREFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if(HOMEBREW_PREFIX)
+    list(APPEND CMAKE_PREFIX_PATH "${HOMEBREW_PREFIX}")
+  endif()
+endif()
 # set(JAVA_AWT_LIBRARY gmp)
 # set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 # find_package(JNI REQUIRED)
@@ -60,6 +55,14 @@ find_package(GMP REQUIRED)
 find_package(PBC REQUIRED)
 
 if(IOS OR ANDROID)
+  if(ANDROID)
+    set(CROSS_ANDROID ON)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__ANDROID_API__=${ANDROID_NATIVE_API_LEVEL}")
+  elseif(IOS)
+    set(CROSS ON)
+    set(CROSS_TARGET "ios64-xcrun")
+  endif()
+
   # Build OpenSSL from source for cross compilation
   include(FetchContent)
   FetchContent_Declare(
