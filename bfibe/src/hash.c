@@ -89,7 +89,7 @@ void hash_to_bytes(uint8_t *result, BFPublicParameters *params, size_t outlen,
       copied += hlen;
       remaining -= hlen;
     } else {
-      memcpy(result, r, remaining);
+      memcpy(result + copied, r, remaining);
       copied += remaining;
       remaining = 0;
     }
