@@ -131,6 +131,6 @@ else()
 
   install(TARGETS bfibe DESTINATION lib)
   # install(TARGETS bfibejni DESTINATION lib)
-  install(TARGETS genprivatekey genibe DESTINATION bin)
+  # install(TARGETS genprivatekey genibe DESTINATION bin)
 endif()
 
