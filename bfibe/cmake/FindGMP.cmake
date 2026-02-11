@@ -62,7 +62,7 @@ elseif(ANDROID)
         PREFIX ${CMAKE_BINARY_DIR}/external/gmp
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/gmp
-            --host=aarch64-linux-android
+            --host=${CMAKE_LIBRARY_ARCHITECTURE}
             --disable-shared
             --enable-static
             --with-pic

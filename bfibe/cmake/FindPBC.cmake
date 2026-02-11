@@ -58,7 +58,7 @@ elseif(ANDROID)
         DEPENDS gmp_external
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc
-            --host=aarch64-linux-android
+            --host=${CMAKE_LIBRARY_ARCHITECTURE}
             --disable-shared # Otherwise we get `ld64.lld: error: unknown argument '-soname'`
             --enable-static
             --with-pic # PIC is required for Android
