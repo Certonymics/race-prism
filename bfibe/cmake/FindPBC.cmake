@@ -99,7 +99,7 @@ elseif(EMSCRIPTEN)
             LIBS=-lgmp
             ac_cv_lib_gmp___gmpz_init=yes
             LEXLIB=
-        BUILD_COMMAND make
+        BUILD_COMMAND emmake make
         BUILD_IN_SOURCE 1
     )
 

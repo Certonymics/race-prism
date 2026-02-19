@@ -13,6 +13,8 @@ include(ExternalProject)
 if(IOS OR ANDROID OR EMSCRIPTEN)
     set(GMP_PREFIX ${CMAKE_BINARY_DIR}/external/gmp)
     if(IOS)
+        set(CONFIGURE_COMMAND ./configure)
+        set(MAKE_COMMAND make)
         set(GMP_CONFIGURE_OPTIONS
             --host=aarch64-apple-darwin
             --disable-shared
@@ -32,6 +34,8 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
             "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
         )
     elseif(ANDROID)
+        set(CONFIGURE_COMMAND ./configure)
+        set(MAKE_COMMAND make)
         set(GMP_CONFIGURE_OPTIONS
             # CMAKE_LIBRARY_ARCHITECTURE is populated by the toolchain file
             --host=${CMAKE_LIBRARY_ARCHITECTURE}
@@ -47,6 +51,8 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
             "CFLAGS=-include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h --target=${CMAKE_C_COMPILER_TARGET}"
         )
     elseif(EMSCRIPTEN)
+        set(CONFIGURE_COMMAND emconfigure ./configure)
+        set(MAKE_COMMAND emmake make)
         set(GMP_CONFIGURE_OPTIONS
                 --host=wasm32-unknown-emscripten
                 --disable-shared
@@ -59,11 +65,11 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
     ExternalProject_Add(gmp_external
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
         PREFIX ${GMP_PREFIX} 
-        CONFIGURE_COMMAND emconfigure ./configure
+        CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
             --prefix=${GMP_PREFIX}
             ${GMP_CONFIGURE_OPTIONS}
             ${GMP_ENV}
-        BUILD_COMMAND make
+        BUILD_COMMAND ${MAKE_COMMAND}
         BUILD_IN_SOURCE 1
     )
     # Rename symbols for iOS and Android
