@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-#include "bfibe.h"
-#include <openssl/sha.h>
 #include <string.h>
+
+#include "bfibe.h"
 
 /*
  * Hashes to a point on the curve defined by params.

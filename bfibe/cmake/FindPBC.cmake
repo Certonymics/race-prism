@@ -83,6 +83,33 @@ elseif(ANDROID)
         INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/external/pbc/include
     )
     add_dependencies(pbc pbc_external)
+elseif(EMSCRIPTEN)
+    ExternalProject_Add(pbc_external
+        URL https://crypto.stanford.edu/pbc/files/pbc-1.0.0.tar.gz
+        PREFIX ${CMAKE_BINARY_DIR}/external/pbc
+        DEPENDS gmp_external
+        CONFIGURE_COMMAND emconfigure ./configure
+            --prefix=${CMAKE_BINARY_DIR}/external/pbc
+            --host=wasm32-unknown-emscripten
+            --disable-shared
+            --enable-static
+            "CFLAGS=-I${GMP_ROOT}/include"
+            "CPPFLAGS=-I${GMP_ROOT}/include" # Required for .y files (e.g. pbc/parser.y)
+            "LDFLAGS=-L${GMP_ROOT}/lib"
+            LIBS=-lgmp
+            ac_cv_lib_gmp___gmpz_init=yes
+            LEXLIB=
+        BUILD_COMMAND make
+        BUILD_IN_SOURCE 1
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/external/pbc/include)
+    add_library(pbc STATIC IMPORTED GLOBAL)
+    set_target_properties(pbc PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/external/pbc/lib/libpbc.a
+        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/external/pbc/include
+    )
+    add_dependencies(pbc pbc_external)
 else()
     find_library(PBC_LIBRARY pbc)
     find_path(PBC_INCLUDE_DIR pbc/pbc.h)

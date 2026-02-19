@@ -4,7 +4,11 @@
  */
 
 #include "security.h"
+#ifdef __EMSCRIPTEN__
+#include "sha_wasm.h"
+#else
 #include <openssl/sha.h>
+#endif
 
 /*
  * Sets the relevant security parameters based on a specified
@@ -24,12 +28,14 @@ bool setup_security(BFSecurityLevel *security, uint8_t level) {
     security->hashlen = SHA_DIGEST_LENGTH;
     security->hashfcn = SHA1;
     break;
+#ifndef __EMSCRIPTEN__
   case 2:
     security->n_p = 1024;
     security->n_q = 224;
     security->hashlen = SHA224_DIGEST_LENGTH;
     security->hashfcn = SHA224;
     break;
+#endif
   case 3:
     security->n_p = 1536;
     security->n_q = 256;

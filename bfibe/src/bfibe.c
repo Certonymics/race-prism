@@ -4,9 +4,14 @@
  */
 
 #include "bfibe.h"
+
 #include "hash.h"
 #include "security.h"
+#ifdef __EMSCRIPTEN__
+#include <unistd.h>
+#else
 #include <openssl/rand.h>
+#endif
 #include <string.h>
 
 /**
@@ -122,9 +127,22 @@ BFMessage *bf_encrypt(BFPublicParameters *params, element_t public_key,
 
   // Step 3
   uint8_t rho[hlen];
+#ifdef __EMSCRIPTEN__
+  uint8_t *offset = rho;
+  size_t remaining = hlen;
+  while (remaining > 0) {
+    size_t chunk = remaining > 256 ? 256 : remaining;
+    if (getentropy(offset, chunk) != 0) {
+      return NULL;
+    }
+    remaining -= chunk;
+    offset += chunk;
+  }
+#else
   if (!RAND_bytes(rho, hlen)) {
     return NULL;
   }
+#endif
 
   // Step 4
   uint8_t t[hlen];

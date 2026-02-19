@@ -73,28 +73,36 @@ if(IOS OR ANDROID)
   set(BUILD_OPENSSL ON)
   set(OPENSSL_BUILD_VERSION "3.6.0")
   FetchContent_MakeAvailable(openssl-cmake)
-
-else()
+elseif(NOT EMSCRIPTEN)
   find_package(OpenSSL REQUIRED)
 endif()
 
 add_library(bfibe STATIC
-  src/bfibe.c src/hash.c src/base64.c
+  src/bfibe.c src/hash.c
   src/api.c
   src/export.c src/security.c
   include/bfibe.h
   include/api.h)
+if(EMSCRIPTEN)
+  target_sources(bfibe PRIVATE src/base64_wasm.c src/sha_wasm.c)
+else()
+  target_sources(bfibe PRIVATE src/base64_openssl.c)
+endif()
 target_include_directories(bfibe PUBLIC include)
 
-if(IOS OR ANDROID)
+if(IOS OR ANDROID OR EMSCRIPTEN)
   add_dependencies(bfibe gmp_external)
   add_dependencies(bfibe pbc_external)
   target_link_libraries(bfibe PUBLIC gmp)
   target_link_libraries(bfibe PUBLIC pbc)
-  target_link_libraries(bfibe PRIVATE ssl crypto)
-  target_compile_options(bfibe PRIVATE
-    -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h
-  )
+  if(NOT EMSCRIPTEN)
+    # EMSCRIPTEN doesn't need SSL - we have our own implementation
+    target_link_libraries(bfibe PRIVATE ssl crypto)
+    # Only rename for mobile
+    target_compile_options(bfibe PRIVATE
+      -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h
+    )
+  endif()
 else()
   find_library(OPENSSL_CRYPTO_LIBRARY ssl)
   find_path(OPENSSL_INCLUDE_DIR openssl)
