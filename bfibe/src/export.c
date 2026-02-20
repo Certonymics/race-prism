@@ -156,7 +156,7 @@ bool bf_message_from_string(uint8_t *in, BFPublicParameters *params,
 // issues
 size_t bf_message_to_bytes(uint8_t **out, BFPublicParameters *params,
                            BFMessage *msg) {
-  size_t size_size = sizeof(size_t);
+  size_t size_size = sizeof(msg->length);
   size_t element_size = element_length_in_bytes(msg->U);
   size_t output_size =
       size_size + 1 + element_size + params->security.hashlen + msg->length;
@@ -182,8 +182,8 @@ size_t bf_message_to_bytes(uint8_t **out, BFPublicParameters *params,
 
 bool bf_message_from_bytes(uint8_t *in, BFPublicParameters *params,
                            BFMessage *msg) {
-  memcpy(&(msg->length), in, sizeof(size_t));
-  in += sizeof(size_t);
+  memcpy(&(msg->length), in, sizeof(msg->length));
+  in += sizeof(msg->length);
 
   uint8_t level = *in;
   if (level != params->security.level) {

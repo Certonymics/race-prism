@@ -6,6 +6,7 @@
 #pragma once
 #include <pbc/pbc.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef uint8_t *(*HashFn)(const uint8_t *, size_t, uint8_t *);
 
@@ -56,7 +57,7 @@ typedef struct {
  */
 typedef struct {
   // The length of the plaintext
-  size_t length;
+  uint64_t length;
 
   // A member of G1
   element_t U;
