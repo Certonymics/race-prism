@@ -68,6 +68,7 @@ elseif(ANDROID)
     ExternalProject_Add(pbc_external
         URL https://crypto.stanford.edu/pbc/files/pbc-1.0.0.tar.gz
         PREFIX ${CMAKE_BINARY_DIR}/external/pbc
+        BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/external/pbc/lib/libpbc.a
         DEPENDS gmp_external
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc

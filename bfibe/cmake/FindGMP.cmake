@@ -77,6 +77,7 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
         ${TIMESTAMP_OPTION}
         PREFIX ${GMP_PREFIX} 
+        BUILD_BYPRODUCTS ${GMP_PREFIX}/lib/libgmp.a
         CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
             --prefix=${GMP_PREFIX}
             ${GMP_CONFIGURE_OPTIONS}
