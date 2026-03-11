@@ -69,9 +69,13 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
             CC_FOR_BUILD=cc
         )
     endif()
+    set(TIMESTAMP_OPTION "")
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+        set(TIMESTAMP_OPTION DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+    endif()
     ExternalProject_Add(gmp_external
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        ${TIMESTAMP_OPTION}
         PREFIX ${GMP_PREFIX} 
         CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
             --prefix=${GMP_PREFIX}

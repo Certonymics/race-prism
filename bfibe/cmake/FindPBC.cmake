@@ -30,9 +30,13 @@ if(IOS)
         )
     endif()
     set(IOS_VERSION_FLAG $<IF:$<BOOL:${IOS_SIMULATOR}>,-mios-simulator-version-min=12.0,-mios-version-min=12.0>)
+    set(TIMESTAMP_OPTION "")
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+        set(TIMESTAMP_OPTION DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+    endif()
     ExternalProject_Add(pbc_external
         URL https://crypto.stanford.edu/pbc/files/pbc-1.0.0.tar.gz
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        ${TIMESTAMP_OPTION}
         PREFIX ${CMAKE_BINARY_DIR}/external/pbc
         DEPENDS gmp_external
         CONFIGURE_COMMAND ./configure
