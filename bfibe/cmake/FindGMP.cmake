@@ -17,21 +17,28 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
         set(MAKE_COMMAND make)
         set(GMP_CONFIGURE_OPTIONS
             --host=aarch64-apple-darwin
+            $<$<BOOL:${IOS_SIMULATOR}>:--build=x86_64-apple-darwin> # Just need to be diff from host to trigger cross compilation without configure running tests to determine it. conftest hangs forever.
             --disable-shared
             --enable-static
         )
         set(CMAKE_SYSTEM_NAME iOS)
         set(CMAKE_OSX_ARCHITECTURES arm64)
         if(NOT CMAKE_OSX_SYSROOT)
+            if(IOS_SIMULATOR)
+                set(SDK iphonesimulator)
+            else()
+                set(SDK iphoneos)
+            endif()
             execute_process(
-                COMMAND xcrun --sdk iphoneos --show-sdk-path
+                COMMAND xcrun --sdk ${SDK} --show-sdk-path
                 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
                 OUTPUT_STRIP_TRAILING_WHITESPACE
             )
         endif()
+        set(IOS_VERSION_FLAG $<IF:$<BOOL:${IOS_SIMULATOR}>,-mios-simulator-version-min=12.0,-mios-version-min=12.0>)
         set(GMP_ENV
             CC=${CMAKE_C_COMPILER}
-            "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
+            "CFLAGS=-arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} ${IOS_VERSION_FLAG} -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
         )
     elseif(ANDROID)
         set(CONFIGURE_COMMAND ./configure)
@@ -64,6 +71,7 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
     endif()
     ExternalProject_Add(gmp_external
         URL https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         PREFIX ${GMP_PREFIX} 
         CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
             --prefix=${GMP_PREFIX}

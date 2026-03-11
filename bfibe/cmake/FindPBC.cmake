@@ -18,22 +18,31 @@ if(IOS)
     set(CMAKE_SYSTEM_NAME iOS)
     set(CMAKE_OSX_ARCHITECTURES arm64)
     if (NOT CMAKE_OSX_SYSROOT)
+        if(IOS_SIMULATOR)
+            set(SDK iphonesimulator)
+        else()
+            set(SDK iphoneos)
+        endif()
         execute_process(
-            COMMAND xcrun --sdk iphoneos --show-sdk-path
+            COMMAND xcrun --sdk ${SDK} --show-sdk-path
             OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
     endif()
+    set(IOS_VERSION_FLAG $<IF:$<BOOL:${IOS_SIMULATOR}>,-mios-simulator-version-min=12.0,-mios-version-min=12.0>)
     ExternalProject_Add(pbc_external
         URL https://crypto.stanford.edu/pbc/files/pbc-1.0.0.tar.gz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         PREFIX ${CMAKE_BINARY_DIR}/external/pbc
         DEPENDS gmp_external
         CONFIGURE_COMMAND ./configure
             --prefix=${CMAKE_BINARY_DIR}/external/pbc
             --host=aarch64-apple-darwin
+            $<$<BOOL:${IOS_SIMULATOR}>:--build=x86_64-apple-darwin> # Just need to be diff from host to trigger cross compilation without configure running tests to determine it. conftest hangs forever.
+            --build=x86_64-apple-darwin
             --disable-shared
             --enable-static
-            "CC=${CMAKE_C_COMPILER} -arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} -mios-version-min=12.0 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
+            "CC=${CMAKE_C_COMPILER} -arch arm64 -isysroot ${CMAKE_OSX_SYSROOT} ${IOS_VERSION_FLAG} -include ${CMAKE_CURRENT_SOURCE_DIR}/include/gmp_rename.h"
             "CFLAGS=-I${GMP_ROOT}/include"
             "CPPFLAGS=-I${GMP_ROOT}/include"
             "LDFLAGS=-arch arm64 -L${GMP_ROOT}/lib -isysroot ${CMAKE_OSX_SYSROOT}"

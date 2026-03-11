@@ -42,16 +42,23 @@ out CMake's cache.
 
     # Clone the `openssl-cmake` submodule
     git submodule update --init
-    /opt/homebrew/bin/cmake -B build-ios -DIOS=ON
-    cd build-ios
+    /opt/homebrew/bin/cmake -B build/ios -DIOS=ON
+    cd build/ios
+    make
+
+## Building for iOS simulator
+
+    git submodule update --init
+    /opt/homebrew/bin/cmake -B build/ios-simulator -DIOS=on -DIOS_SIMULATOR=on
+    cd build/ios-simulator
     make
 
 ## Building for Android
 
     # Clone the `openssl-cmake` submodule
     git submodule update --init
-    /opt/homebrew/bin/cmake -B build-android -DANDROID=ON
-    cd build-android
+    /opt/homebrew/bin/cmake -B build/android -DANDROID=ON
+    cd build/android
     make
 
 ## Setting up an IBE System

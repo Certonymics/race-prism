@@ -60,7 +60,7 @@ if(IOS OR ANDROID)
     set(OPENSSL_MODULES "-U__ANDROID_API__ -D__ANDROID_API__=${ANDROID_NATIVE_API_LEVEL}")
   elseif(IOS)
     set(CROSS ON)
-    set(CROSS_TARGET "ios64-xcrun")
+    set(CROSS_TARGET $<IF:$<BOOL:${IOS_SIMULATOR}>,iossimulator-arm64-xcrun,ios64-xcrun>)
   endif()
 
   # Build OpenSSL from source for cross compilation
