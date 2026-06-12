@@ -23,6 +23,6 @@ fastapi==0.75.*
 httpx==0.18.*
 hypercorn[trio]==0.13.*
 requests[socks]==2.26.*
-dnspython==2.1.0
+dnspython==2.6.1
 progressbar2==3.53.*
 setuptools~=56.0.0
