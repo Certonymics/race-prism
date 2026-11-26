@@ -95,12 +95,23 @@ if(IOS OR ANDROID OR EMSCRIPTEN)
             set(SYMBOL_RENAME_GMP_PREFIX "__gmp")
             set(SYMBOL_RENAME_BFIBE_PREFIX "bfibe_")
         endif()
+        # nm and objcopy must read the target's object format, so they come
+        # from the toolchain, not PATH: a host nm that cannot read the archive
+        # (Anaconda's, on an Android ELF archive) lists nothing and exits 0,
+        # which left GMP's assembly routines unrenamed until PBC's link
+        # failed. The NDK sets CMAKE_OBJCOPY; Xcode ships no objcopy, so iOS
+        # takes llvm-objcopy from LLVM.
+        if(ANDROID)
+            set(GMP_RENAME_OBJCOPY ${CMAKE_OBJCOPY})
+        else()
+            find_program(GMP_RENAME_OBJCOPY llvm-objcopy HINTS /opt/homebrew/opt/llvm/bin /usr/local/opt/llvm/bin REQUIRED)
+        endif()
         ExternalProject_Add_Step(gmp_external rename_symbols
             DEPENDEES build
             DEPENDERS install
             WORKING_DIRECTORY <BINARY_DIR>/.libs
-            COMMAND sh -c "nm libgmp.a | grep -e '\\s${SYMBOL_RENAME_GMP_PREFIX}' | awk '{print $NF}' | sort | uniq | awk '{print $1, \"${SYMBOL_RENAME_BFIBE_PREFIX}\" $1}' > renames.txt"
-            COMMAND llvm-objcopy --redefine-syms=renames.txt libgmp.a libgmp.a
+            COMMAND sh -c "'${CMAKE_NM}' libgmp.a | grep -e '\\s${SYMBOL_RENAME_GMP_PREFIX}' | awk '{print $NF}' | sort | uniq | awk '{print $1, \"${SYMBOL_RENAME_BFIBE_PREFIX}\" $1}' > renames.txt && test -s renames.txt"
+            COMMAND ${GMP_RENAME_OBJCOPY} --redefine-syms=renames.txt libgmp.a libgmp.a
         )
     endif()
     file(MAKE_DIRECTORY ${GMP_PREFIX}/include)
